@@ -1,0 +1,23 @@
+{
+  "name": "eventhub-monorepo",
+  "version": "1.0.0",
+  "description": "EventHub – Production-Ready Online Event Booking System",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "seed": "npm --prefix server run seed",
+    "build": "npm --prefix client run build",
+    "build:all": "npm --prefix client install && npm --prefix client run build && npm --prefix server install"
+  },
+  "keywords": [
+    "event-booking",
+    "react",
+    "node",
+    "express",
+    "mongodb",
+    "razorpay"
+  ],
+  "author": "EventHub Team",
+  "license": "MIT"
+}
