@@ -143,7 +143,25 @@ const AdminPayments = () => {
                       </td>
 
                       <td className="py-4 px-3 font-mono text-[11px] text-slate-600">
-                        {p.razorpayOrderId}
+                        {p.paymentMethod === 'upi_qr' ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200">
+                              📱 UPI (9628676007@fam)
+                            </span>
+                            <span className="block text-[10px] text-slate-500 font-mono">
+                              UTR: {p.utrNumber || 'N/A'}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
+                              💳 Razorpay
+                            </span>
+                            <span className="block text-[10px] text-slate-500 font-mono">
+                              {p.razorpayOrderId}
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       <td className="py-4 px-3">

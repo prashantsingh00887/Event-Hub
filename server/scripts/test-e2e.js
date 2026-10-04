@@ -354,6 +354,50 @@ const runAllTests = async () => {
       eventAfterCancel.data
     );
 
+    // 19. UPI QR Code Direct Payment Confirmation
+    const upiBookingRes = await request(
+      {
+        hostname: 'localhost',
+        port: 5000,
+        path: '/api/bookings',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`
+        }
+      },
+      {
+        eventId: createdEventId,
+        tickets: 1
+      }
+    );
+    const upiBooking = upiBookingRes.data?.data;
+
+    const confirmUpiRes = await request(
+      {
+        hostname: 'localhost',
+        port: 5000,
+        path: '/api/payments/confirm-upi',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`
+        }
+      },
+      {
+        bookingId: upiBooking._id,
+        utrNumber: 'UTR998877665544'
+      }
+    );
+    assert(
+      confirmUpiRes.status === 200 &&
+      confirmUpiRes.data.data?.booking?.paymentStatus === 'Paid' &&
+      confirmUpiRes.data.data?.booking?.paymentMethod === 'upi_qr' &&
+      confirmUpiRes.data.data?.booking?.bookingStatus === 'Confirmed',
+      '19. UPI QR Code Payment (Prashant singh QR) Confirmation',
+      confirmUpiRes.data
+    );
+
     console.log('\n======================================================');
     console.log(`🏁 TEST RESULTS: ${passed} PASSED | ${failed} FAILED`);
     console.log('======================================================\n');

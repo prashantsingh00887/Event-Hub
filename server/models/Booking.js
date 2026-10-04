@@ -50,6 +50,20 @@ const bookingSchema = new mongoose.Schema(
     razorpayPaymentId: {
       type: String,
       trim: true
+    },
+    paymentMethod: {
+      type: String,
+      enum: ['razorpay', 'upi_qr', 'free'],
+      default: 'razorpay'
+    },
+    utrNumber: {
+      type: String,
+      trim: true
+    },
+    upiId: {
+      type: String,
+      trim: true,
+      default: '9628676007@fam'
     }
   },
   {

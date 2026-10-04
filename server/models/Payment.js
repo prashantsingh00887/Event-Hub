@@ -26,9 +26,21 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       default: 'INR'
     },
-    razorpayOrderId: {
+    paymentMethod: {
       type: String,
-      required: true
+      enum: ['razorpay', 'upi_qr', 'free'],
+      default: 'razorpay'
+    },
+    utrNumber: {
+      type: String,
+      trim: true
+    },
+    upiId: {
+      type: String,
+      trim: true
+    },
+    razorpayOrderId: {
+      type: String
     },
     razorpayPaymentId: {
       type: String

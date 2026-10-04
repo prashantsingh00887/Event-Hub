@@ -221,6 +221,9 @@ const MyBookingsPage = () => {
                       <span>•</span>
                       <span className="text-slate-500">
                         Payment: <strong className="text-slate-700">{booking.paymentStatus}</strong>
+                        {booking.paymentMethod === 'upi_qr' && (
+                          <span className="ml-1 text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">UPI</span>
+                        )}
                       </span>
                     </div>
                   </div>

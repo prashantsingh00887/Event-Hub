@@ -228,6 +228,11 @@ const AdminBookings = () => {
                         >
                           {b.paymentStatus}
                         </span>
+                        {b.paymentMethod === 'upi_qr' && (
+                          <span className="block mt-1 text-[9px] font-bold text-purple-700 font-mono">
+                            📱 UPI {b.utrNumber ? `• ${b.utrNumber}` : ''}
+                          </span>
+                        )}
                       </td>
                       <td className="py-3.5 px-3">
                         <span

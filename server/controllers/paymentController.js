@@ -237,7 +237,108 @@ const verifyPayment = async (req, res, next) => {
   }
 };
 
+// @desc    Confirm UPI QR Code payment and generate booking ticket
+// @route   POST /api/payments/confirm-upi
+// @access  Private
+const confirmUpiPayment = async (req, res, next) => {
+  try {
+    const { bookingId, utrNumber } = req.body;
+
+    if (!bookingId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Booking ID is required.'
+      });
+    }
+
+    const booking = await Booking.findById(bookingId).populate('event');
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found.'
+      });
+    }
+
+    // Verify ownership or admin
+    if (
+      req.user.role !== 'admin' &&
+      booking.user.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied.'
+      });
+    }
+
+    if (booking.bookingStatus === 'Confirmed') {
+      return res.status(200).json({
+        success: true,
+        message: 'This booking is already confirmed.',
+        data: { booking }
+      });
+    }
+
+    // Re-verify seat availability
+    if (booking.event.availableSeats < booking.tickets) {
+      return res.status(400).json({
+        success: false,
+        message: `Seats no longer available. Only ${booking.event.availableSeats} seat(s) left.`
+      });
+    }
+
+    // Atomically decrement available seats
+    await Event.findByIdAndUpdate(booking.event._id, {
+      $inc: { availableSeats: -booking.tickets }
+    });
+
+    const sanitizedUtr = utrNumber ? String(utrNumber).trim() : `UPI-${Date.now()}`;
+    const transactionId = sanitizedUtr.startsWith('UTR-') || sanitizedUtr.startsWith('UPI-')
+      ? sanitizedUtr
+      : `UTR-${sanitizedUtr}`;
+
+    booking.bookingStatus = 'Confirmed';
+    booking.paymentStatus = 'Paid';
+    booking.paymentMethod = 'upi_qr';
+    booking.utrNumber = sanitizedUtr;
+    booking.upiId = '9628676007@fam';
+    booking.razorpayOrderId = `UPI-ORD-${Date.now()}`;
+    booking.razorpayPaymentId = transactionId;
+    await booking.save();
+
+    // Create payment transaction record
+    const payment = await Payment.create({
+      booking: booking._id,
+      user: req.user._id,
+      event: booking.event._id,
+      amount: booking.totalAmount,
+      currency: 'INR',
+      paymentMethod: 'upi_qr',
+      utrNumber: sanitizedUtr,
+      upiId: '9628676007@fam',
+      razorpayOrderId: booking.razorpayOrderId,
+      razorpayPaymentId: transactionId,
+      status: 'Paid'
+    });
+
+    await booking.populate('user', 'name email phone');
+
+    res.status(200).json({
+      success: true,
+      message: 'UPI payment received and booking confirmed successfully!',
+      data: {
+        booking,
+        paymentId: payment._id,
+        transactionId
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createOrder,
-  verifyPayment
+  verifyPayment,
+  confirmUpiPayment
 };
+

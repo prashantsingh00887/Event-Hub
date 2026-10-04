@@ -176,7 +176,7 @@ const TicketCard = ({ booking, onPrint }) => {
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             Verified Digital Pass
           </span>
-          <span>Payment: <strong>{booking.paymentStatus}</strong></span>
+          <span>Payment: <strong>{booking.paymentStatus}</strong> {booking.paymentMethod === 'upi_qr' ? '(UPI)' : ''}</span>
         </div>
       </div>
 

@@ -114,14 +114,6 @@ const AdminLoginPage = () => {
             </div>
           </div>
 
-          <div className="bg-purple-50/70 p-3 rounded-xl border border-purple-100 text-[11px] text-purple-800 space-y-1">
-            <div className="font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
-              Default Demo Admin Credentials:
-            </div>
-            <p>Email: <code className="font-mono font-bold">admin@eventhub.com</code></p>
-            <p>Password: <code className="font-mono font-bold">Admin@12345</code></p>
-          </div>
 
           <button
             type="submit"
